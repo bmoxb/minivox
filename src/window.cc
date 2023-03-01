@@ -10,7 +10,7 @@ namespace window {
 Window::Window(GLFWwindow* window) : window(window) {
   glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
 
-  glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
+  auto callback = [](GLFWwindow* win, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
     auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
 
     switch (action) {
@@ -22,7 +22,9 @@ Window::Window(GLFWwindow* window) : window(window) {
         self->keys[key] = false;
         break;
     }
-  });
+  };
+
+  glfwSetKeyCallback(window, callback);
 
   std::cout << "window created: " << window << std::endl;
 }

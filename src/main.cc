@@ -5,7 +5,7 @@
 #include "graphics.h"
 #include "window.h"
 
-int main(int argc, char* argv[]) {
+int main() {
   window::Manager window_manager;
 
   auto window = window_manager.new_window(800, 600, "minivox");
