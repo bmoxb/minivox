@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <bgfx/bgfx.h>
 
+#include <array>
 #include <functional>
 
 namespace window {
@@ -17,7 +18,6 @@ class Window {
  private:
   friend class Manager;
 
-  using KeyCallback = std::function<void(KeyAction, int)>;
   using ResizeCallback = std::function<void(uint16_t, uint16_t)>;
 
   Window(GLFWwindow* window);
@@ -36,14 +36,15 @@ class Window {
   void close() const;
   bool is_open() const;
 
-  void on_key(KeyCallback callback);
+  bool is_key_down(int glfw_key) const;
 
   void on_framebuffer_resize(ResizeCallback callback);
 
  private:
   GLFWwindow* window;
 
-  KeyCallback key_callback;
+  std::array<bool, GLFW_KEY_LAST> keys;
+
   ResizeCallback resize_callback;
 };
 

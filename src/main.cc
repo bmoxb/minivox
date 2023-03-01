@@ -18,12 +18,6 @@ int main(int argc, char* argv[]) {
     bgfx::setViewRect(0, 0, 0, width, height);
   });
 
-  window.on_key([&](auto action, int key_code) {
-    if (key_code == GLFW_KEY_ESCAPE) {
-      window.close();
-    }
-  });
-
   bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xFF0000FF, 1.0f, 0);
   bgfx::setViewRect(0, 0, 0, window.get_framebuffer_width(), window.get_framebuffer_height());
 
@@ -32,6 +26,10 @@ int main(int argc, char* argv[]) {
     bgfx::frame();
 
     glfwPollEvents();
+
+    if (window.is_key_down(GLFW_KEY_ESCAPE)) {
+      window.close();
+    }
   }
 
   return EXIT_SUCCESS;
