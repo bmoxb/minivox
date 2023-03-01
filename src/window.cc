@@ -7,11 +7,63 @@
 
 namespace window {
 
-Window::Window(GLFWwindow* window) : window(window) {
-  glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
+// Initialise GLFW and create a GLFW window.
+inline GLFWwindow* glfw_init(std::string title, uint16_t width, uint16_t height) {
+  if (glfwInit()) {
+    std::cout << "GLFW initialised" << std::endl;
+  } else {
+    std::cerr << "GLFW initialisation failed" << std::endl;
+  }
 
-  auto callback = [](GLFWwindow* win, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
-    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+  auto raw_window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title.c_str(), nullptr, nullptr);
+
+  if (raw_window) {
+    std::cout << "window created" << std::endl;
+  } else {
+    std::cerr << "failed to create GLFW window" << std::endl;
+  }
+
+  return raw_window;
+}
+
+// Initialise bfgx such that it will draw to the given GLFW window.
+inline void bgfx_init(GLFWwindow* raw_window) {
+  bgfx::Init bgfx_init;
+
+  int width, height;
+  glfwGetFramebufferSize(raw_window, &width, &height);
+
+  bgfx_init.type = bgfx::RendererType::Count;
+  bgfx_init.resolution.width = static_cast<uint32_t>(width);
+  bgfx_init.resolution.height = static_cast<uint32_t>(height);
+  bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
+
+  // TODO: Handle other platforms.
+  bgfx_init.platformData.ndt = glfwGetX11Display();
+  bgfx_init.platformData.nwh = reinterpret_cast<void*>(glfwGetX11Window(raw_window));
+
+  if (bgfx::init(bgfx_init)) {
+    std::cout << "bgfx initialised" << std::endl;
+  } else {
+    std::cerr << "bgfx initialisation failed" << std::endl;
+  }
+
+  bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000FF);
+  bgfx::setViewRect(0, 0, 0, width, height);
+}
+
+Window::Window(std::string title, uint16_t width, uint16_t height) {
+  raw_window = glfw_init(title, width, height);
+  bgfx_init(raw_window);
+
+  // allow our wrapper window to be accessed from callback functions
+  glfwSetWindowUserPointer(raw_window, reinterpret_cast<void*>(this));
+
+  // handle key presses
+  glfwSetKeyCallback(raw_window, [](GLFWwindow* w, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
+    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(w));
 
     switch (action) {
       case GLFW_PRESS:
@@ -22,82 +74,37 @@ Window::Window(GLFWwindow* window) : window(window) {
         self->keys[key] = false;
         break;
     }
-  };
+  });
 
-  glfwSetKeyCallback(window, callback);
+  // handle the framebuffer (part of window that is drawn to) being resized
+  glfwSetFramebufferSizeCallback(raw_window, [](GLFWwindow* w, int width, int height) {
+    std::cout << "framebuffer resized: " << width << ", " << height << std::endl;
 
-  std::cout << "window created: " << window << std::endl;
-}
-
-Window::~Window() {
-  glfwDestroyWindow(window);
-  std::cout << "window destroyed: " << window << std::endl;
-}
-
-bgfx::PlatformData Window::get_platform_data() const {
-  // TODO: Handle other platforms.
-  bgfx::PlatformData pd;
-  pd.ndt = glfwGetX11Display();
-  pd.nwh = reinterpret_cast<void*>(glfwGetX11Window(window));
-  return pd;
-}
-
-uint16_t Window::get_framebuffer_width() const {
-  int width;
-  glfwGetFramebufferSize(window, &width, nullptr);
-  return static_cast<uint16_t>(width);
-}
-
-uint16_t Window::get_framebuffer_height() const {
-  int height;
-  glfwGetFramebufferSize(window, nullptr, &height);
-  return static_cast<uint16_t>(height);
-}
-
-void Window::close() const {
-  glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-bool Window::is_open() const {
-  return glfwWindowShouldClose(window) == GLFW_FALSE;
-}
-
-bool Window::is_key_down(int glfw_key) const {
-  return keys[glfw_key];
-}
-
-void Window::on_framebuffer_resize(ResizeCallback callback) {
-  resize_callback = callback;
-
-  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int width, int height) {
-    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
-    self->resize_callback(static_cast<uint16_t>(width), static_cast<uint16_t>(height));
+    bgfx::setViewRect(0, 0, 0, static_cast<uint16_t>(width), static_cast<uint16_t>(height));
   });
 }
 
-Manager::Manager() {
-  if (glfwInit()) {
-    std::cout << "GLFW initialised" << std::endl;
-  } else {
-    std::cerr << "GLFW initialisation failed" << std::endl;
-  }
-}
+Window::~Window() {
+  bgfx::shutdown();
+  std::cout << "bgfx terminated" << std::endl;
 
-Manager::~Manager() {
+  glfwDestroyWindow(raw_window);
+  std::cout << "window destroyed" << std::endl;
+
   glfwTerminate();
   std::cout << "GLFW terminated" << std::endl;
 }
 
-Window Manager::new_window(int width, int height, const char* title) const {
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+void Window::close() const {
+  glfwSetWindowShouldClose(raw_window, GLFW_TRUE);
+}
 
-  auto raw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+bool Window::is_open() const {
+  return glfwWindowShouldClose(raw_window) == GLFW_FALSE;
+}
 
-  if (!raw_window) {
-    std::cerr << "failed to create GLFW window" << std::endl;
-  }
-
-  return Window(raw_window);
+bool Window::is_key_down(int glfw_key) const {
+  return keys[glfw_key];
 }
 
 };  // namespace window
