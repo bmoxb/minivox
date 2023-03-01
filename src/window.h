@@ -7,9 +7,18 @@
 
 namespace window {
 
+enum class KeyAction {
+  Down,
+  Up,
+  Held,
+};
+
 class Window {
  private:
   friend class Manager;
+
+  using KeyCallback = std::function<void(KeyAction, int)>;
+  using ResizeCallback = std::function<void(uint16_t, uint16_t)>;
 
   Window(GLFWwindow* window);
 
@@ -27,14 +36,15 @@ class Window {
   void close() const;
   bool is_open() const;
 
-  bool is_key_down(int glfw_key) const;
+  void on_key(KeyCallback callback);
 
-  void on_framebuffer_resize(std::function<void(uint16_t, uint16_t)> callback);
+  void on_framebuffer_resize(ResizeCallback callback);
 
  private:
   GLFWwindow* window;
 
-  std::function<void(uint16_t, uint16_t)> resize_callback;
+  KeyCallback key_callback;
+  ResizeCallback resize_callback;
 };
 
 class Manager {

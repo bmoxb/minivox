@@ -9,6 +9,7 @@ namespace window {
 
 Window::Window(GLFWwindow* window) : window(window) {
   glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
+
   std::cout << "window created: " << window << std::endl;
 }
 
@@ -45,11 +46,29 @@ bool Window::is_open() const {
   return glfwWindowShouldClose(window) == GLFW_FALSE;
 }
 
-bool Window::is_key_down(int glfw_key) const {
-  return glfwGetKey(window, glfw_key) == GLFW_PRESS;
+void Window::on_key(KeyCallback callback) {
+  key_callback = callback;
+
+  glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int _scancode, int glfw_action, int _mods) {
+    KeyAction action;
+    switch (glfw_action) {
+      case GLFW_PRESS:
+        action = KeyAction::Down;
+        break;
+      case GLFW_RELEASE:
+        action = KeyAction::Up;
+        break;
+      case GLFW_REPEAT:
+        action = KeyAction::Held;
+        break;
+    }
+
+    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+    self->key_callback(action, key);
+  });
 }
 
-void Window::on_framebuffer_resize(std::function<void(uint16_t, uint16_t)> callback) {
+void Window::on_framebuffer_resize(ResizeCallback callback) {
   resize_callback = callback;
 
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int width, int height) {
