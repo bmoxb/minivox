@@ -2,24 +2,23 @@
 
 #include <iostream>
 
+#include "graphics.h"
 #include "window.h"
 
 int main(int argc, char* argv[]) {
   window::Manager window_manager;
 
-  auto window = window_manager.new_window();
+  auto window = window_manager.new_window(800, 600, "minivox");
 
-  bgfx::Init bgfx_init;
-  bgfx_init.type = bgfx::RendererType::Count;
-  bgfx_init.resolution.width = 1280;
-  bgfx_init.resolution.height = 720;
-  bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
-  bgfx_init.platformData = window.get_platform_data();
+  graphics::Handle bgfx_handle(window);
 
-  bgfx::init(bgfx_init);
+  window.on_framebuffer_resize([](uint16_t width, uint16_t height) {
+    std::cout << "framebuffer resized: " << width << ", " << height << std::endl;
+    bgfx::setViewRect(0, 0, 0, width, height);
+  });
 
   bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xFF0000FF, 1.0f, 0);
-  bgfx::setViewRect(0, 0, 0, 1280, 720);
+  bgfx::setViewRect(0, 0, 0, window.get_framebuffer_width(), window.get_framebuffer_height());
 
   while (window.is_open()) {
     bgfx::touch(0);
@@ -31,8 +30,6 @@ int main(int argc, char* argv[]) {
       window.close();
     }
   }
-
-  bgfx::shutdown();
 
   return EXIT_SUCCESS;
 }

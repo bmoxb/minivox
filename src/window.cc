@@ -8,6 +8,7 @@
 namespace window {
 
 Window::Window(GLFWwindow* window) : window(window) {
+  glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
   std::cout << "window created: " << window << std::endl;
 }
 
@@ -24,6 +25,18 @@ bgfx::PlatformData Window::get_platform_data() const {
   return pd;
 }
 
+uint16_t Window::get_framebuffer_width() const {
+  int width;
+  glfwGetFramebufferSize(window, &width, nullptr);
+  return static_cast<uint16_t>(width);
+}
+
+uint16_t Window::get_framebuffer_height() const {
+  int height;
+  glfwGetFramebufferSize(window, nullptr, &height);
+  return static_cast<uint16_t>(height);
+}
+
 void Window::close() const {
   glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
@@ -34,6 +47,15 @@ bool Window::is_open() const {
 
 bool Window::is_key_down(int glfw_key) const {
   return glfwGetKey(window, glfw_key) == GLFW_PRESS;
+}
+
+void Window::on_framebuffer_resize(std::function<void(uint16_t, uint16_t)> callback) {
+  resize_callback = callback;
+
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int width, int height) {
+    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+    self->resize_callback(static_cast<uint16_t>(width), static_cast<uint16_t>(height));
+  });
 }
 
 Manager::Manager() {
@@ -49,10 +71,10 @@ Manager::~Manager() {
   std::cout << "GLFW terminated" << std::endl;
 }
 
-Window Manager::new_window() const {
+Window Manager::new_window(int width, int height, const char* title) const {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-  auto raw_window = glfwCreateWindow(1280, 720, "minivox", nullptr, nullptr);
+  auto raw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
   if (!raw_window) {
     std::cerr << "failed to create GLFW window" << std::endl;
