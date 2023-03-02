@@ -19,6 +19,9 @@ class VertexBuffer {
     bgfx::destroy(handle);
   }
 
+  VertexBuffer(const VertexBuffer&) = delete;
+  VertexBuffer& operator=(const VertexBuffer&) = delete;
+
   void use() const {
     bgfx::setVertexBuffer(0, handle);
   }
