@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "gfx/program.h"
+#include "gfx/shader.h"
 #include "window.h"
 
 struct PositionColour {
@@ -37,9 +39,9 @@ int main() {
 
   auto index_buffer = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
-  auto vs = bgfx::createShader(bgfx::makeRef(vs_glsl, sizeof(vs_glsl)));
-  auto fs = bgfx::createShader(bgfx::makeRef(fs_glsl, sizeof(fs_glsl)));
-  auto prog = bgfx::createProgram(vs, fs, true);
+  gfx::Shader vs(vs_glsl, sizeof(vs_glsl));
+  gfx::Shader fs(fs_glsl, sizeof(fs_glsl));
+  gfx::Program program(vs, fs);
 
   while (window.is_open()) {
     const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
@@ -78,8 +80,7 @@ int main() {
     // Set render states.
     bgfx::setState(BGFX_STATE_DEFAULT);
 
-    // Submit primitive for rendering to view 0.
-    bgfx::submit(0, prog);
+    program.submit();
 
     bgfx::frame();
 
