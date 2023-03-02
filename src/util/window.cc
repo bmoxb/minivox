@@ -1,14 +1,14 @@
-#include "window.h"
+#include "util/window.h"
 
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3native.h>
 
 #include <iostream>
 
-namespace window {
+namespace util {
 
 // Initialise GLFW and create a GLFW window.
-inline GLFWwindow* glfw_init(std::string title, uint16_t width, uint16_t height) {
+inline GLFWwindow* glfw_init(const std::string& title, uint16_t width, uint16_t height) {
   if (glfwInit()) {
     std::cout << "GLFW initialised" << std::endl;
   } else {
@@ -54,7 +54,7 @@ inline void bgfx_init(GLFWwindow* raw_window) {
   bgfx::setViewRect(0, 0, 0, width, height);
 }
 
-Window::Window(std::string title, uint16_t width, uint16_t height) {
+Window::Window(const std::string& title, uint16_t width, uint16_t height) {
   raw_window = glfw_init(title, width, height);
   bgfx_init(raw_window);
 
@@ -107,4 +107,4 @@ bool Window::is_key_down(int glfw_key) const {
   return keys[glfw_key];
 }
 
-};  // namespace window
+};  // namespace util

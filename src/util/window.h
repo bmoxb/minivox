@@ -4,17 +4,16 @@
 #include <bgfx/bgfx.h>
 
 #include <array>
-#include <functional>
 #include <string>
 
-namespace window {
+namespace util {
 
 class Window {
  public:
   /*
    * Initialise GLFW, create a GLFW window, and initialise bfgx such that that window may be drawn to.
    */
-  Window(std::string title, uint16_t width, uint16_t height);
+  Window(const std::string& title, uint16_t width, uint16_t height);
 
   ~Window();
 
@@ -32,4 +31,4 @@ class Window {
   std::array<bool, GLFW_KEY_LAST> keys;
 };
 
-};  // namespace window
+};  // namespace util

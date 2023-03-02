@@ -9,7 +9,7 @@
 #include "gfx/program.h"
 #include "gfx/shader.h"
 #include "gfx/vertexbuffer.h"
-#include "window.h"
+#include "util/window.h"
 
 struct PositionColour {
   float x;
@@ -19,7 +19,7 @@ struct PositionColour {
 };
 
 int main() {
-  window::Window window("minivox", 800, 600);
+  util::Window window("minivox", 800, 600);
 
   bgfx::VertexLayout layout;
   layout
