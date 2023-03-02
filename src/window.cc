@@ -35,7 +35,7 @@ inline void bgfx_init(GLFWwindow* raw_window) {
   int width, height;
   glfwGetFramebufferSize(raw_window, &width, &height);
 
-  bgfx_init.type = bgfx::RendererType::Count;
+  bgfx_init.type = bgfx::RendererType::OpenGL;
   bgfx_init.resolution.width = static_cast<uint32_t>(width);
   bgfx_init.resolution.height = static_cast<uint32_t>(height);
   bgfx_init.resolution.reset = BGFX_RESET_VSYNC;

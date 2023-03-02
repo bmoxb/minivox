@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(bgfx.cmake/)
-include_directories(bgfx.cmake/bgfx/include/)
+include_directories(bgfx.cmake/bgfx/include/ bgfx.cmake/bx/include/)
 set(BGFX_SHADER_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/bgfx.cmake/bgfx/src)
 
 add_subdirectory(shaders/)
