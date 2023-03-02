@@ -18,7 +18,7 @@ class IndexBuffer {
 
  private:
   const std::vector<uint16_t> data;
-  bgfx::IndexBufferHandle handle;
+  const bgfx::IndexBufferHandle handle;
 };
 
 }  // namespace gfx

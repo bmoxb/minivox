@@ -8,6 +8,7 @@
 #include "gfx/indexbuffer.h"
 #include "gfx/program.h"
 #include "gfx/shader.h"
+#include "gfx/vertexbuffer.h"
 #include "window.h"
 
 struct PositionColour {
@@ -27,14 +28,13 @@ int main() {
       .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
       .end();
 
-  PositionColour vertices[] = {
+  std::vector<PositionColour> vertices = {
       {0.5f, 0.5f, 0.0f, 0xff0000ff},
       {0.5f, -0.5f, 0.0f, 0xff0000ff},
       {-0.5f, -0.5f, 0.0f, 0xff00ff00},
       {-0.5f, 0.5f, 0.0f, 0xff00ff00},
   };
-
-  auto vertex_buffer = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), layout);
+  gfx::VertexBuffer vertex_buffer(std::move(vertices), layout);
 
   std::vector<uint16_t> indices = {0, 1, 3, 1, 2, 3};
   gfx::IndexBuffer index_buffer(std::move(indices));
@@ -73,8 +73,7 @@ int main() {
     // Set model matrix for rendering.
     bgfx::setTransform(mtx);
 
-    // Set vertex and index buffer.
-    bgfx::setVertexBuffer(0, vertex_buffer);
+    vertex_buffer.use();
     index_buffer.use();
 
     // Set render states.
