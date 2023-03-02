@@ -11,10 +11,10 @@ class Program {
   Program(const Shader& vert, const Shader& frag);
   ~Program();
 
-  void submit() const;
-
   Program(const Program&) = delete;
   Program& operator=(const Program&) = delete;
+
+  void submit() const;
 
  private:
   bgfx::ProgramHandle handle;

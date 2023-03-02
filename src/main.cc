@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "gfx/indexbuffer.h"
 #include "gfx/program.h"
 #include "gfx/shader.h"
 #include "window.h"
@@ -35,9 +36,8 @@ int main() {
 
   auto vertex_buffer = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), layout);
 
-  uint16_t indices[] = {0, 1, 3, 1, 2, 3};
-
-  auto index_buffer = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+  std::vector<uint16_t> indices = {0, 1, 3, 1, 2, 3};
+  gfx::IndexBuffer index_buffer(std::move(indices));
 
   gfx::Shader vs(vs_glsl, sizeof(vs_glsl));
   gfx::Shader fs(fs_glsl, sizeof(fs_glsl));
@@ -75,7 +75,7 @@ int main() {
 
     // Set vertex and index buffer.
     bgfx::setVertexBuffer(0, vertex_buffer);
-    bgfx::setIndexBuffer(index_buffer);
+    index_buffer.use();
 
     // Set render states.
     bgfx::setState(BGFX_STATE_DEFAULT);
