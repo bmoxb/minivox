@@ -79,16 +79,23 @@ int main() {
     glfwPollEvents();
 
     if (window.is_key_down(GLFW_KEY_UP)) {
-      camera.move_forward(2.0f * delta);
+      camera.move_forward(3.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_DOWN)) {
-      camera.move_backward(2.0f * delta);
+      camera.move_backward(3.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_LEFT)) {
-      camera.strafe_left(2.0f * delta);
+      camera.strafe_left(3.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_RIGHT)) {
-      camera.strafe_right(2.0f * delta);
+      camera.strafe_right(3.0f * delta);
+    }
+
+    if (window.is_key_down(GLFW_KEY_A)) {
+      camera.rotate(80.0f * delta, 0.0f);
+    }
+    if (window.is_key_down(GLFW_KEY_D)) {
+      camera.rotate(-80.0f * delta, 0.0f);
     }
 
     if (window.is_key_down(GLFW_KEY_ESCAPE)) {

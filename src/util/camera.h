@@ -17,6 +17,8 @@ class Camera {
   void strafe_left(float speed);
   void strafe_right(float speed);
 
+  void rotate(float yaw_update, float pitch_update);
+
  private:
   void update_view();
 
@@ -27,6 +29,9 @@ class Camera {
   bx::Vec3 direction = {0.0f, 0.0f, -1.0f};
 
   bx::Vec3 up = {0.0f, 1.0f, 0.0f};
+
+  float yaw = -90.0f;
+  float pitch = 0.0f;
 
   std::array<float, 16> view;
   std::array<float, 16> projection;
