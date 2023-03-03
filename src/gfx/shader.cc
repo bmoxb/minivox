@@ -19,7 +19,7 @@ Shader::Shader(ShaderSources sources) {
       break;
 
     default:
-      std::cerr << "cannot load shader for renderer type: " << bgfx::getRendererType() << std::endl;
+      std::cerr << "cannot load shader for renderer type: " << static_cast<int>(bgfx::getRendererType()) << std::endl;
       break;
   }
 

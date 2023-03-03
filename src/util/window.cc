@@ -51,7 +51,7 @@ inline void bgfx_init(GLFWwindow* raw_window) {
   }
 
   bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000FF);
-  bgfx::setViewRect(0, 0, 0, width, height);
+  bgfx::setViewRect(0, 0, 0, static_cast<uint16_t>(width), static_cast<uint16_t>(height));
 }
 
 Window::Window(const std::string& title, uint16_t width, uint16_t height) {
@@ -67,20 +67,23 @@ Window::Window(const std::string& title, uint16_t width, uint16_t height) {
 
     switch (action) {
       case GLFW_PRESS:
-        self->keys[key] = true;
+        self->keys[static_cast<std::size_t>(key)] = true;
         break;
 
       case GLFW_RELEASE:
-        self->keys[key] = false;
+        self->keys[static_cast<std::size_t>(key)] = false;
         break;
     }
   });
 
   // handle the framebuffer (part of window that is drawn to) being resized
-  glfwSetFramebufferSizeCallback(raw_window, []([[maybe_unused]] GLFWwindow* w, int width, int height) {
+  glfwSetFramebufferSizeCallback(raw_window, [](GLFWwindow* w, int new_width, int new_height) {
     auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(w));
 
-    FramebufferSize size{.width = static_cast<uint16_t>(width), .height = static_cast<uint16_t>(height)};
+    FramebufferSize size{
+        .width = static_cast<uint16_t>(new_width),
+        .height = static_cast<uint16_t>(new_height),
+    };
     self->new_size = std::make_optional(size);
   });
 }
@@ -105,7 +108,7 @@ bool Window::is_open() const {
 }
 
 bool Window::is_key_down(int glfw_key) const {
-  return keys[glfw_key];
+  return keys[static_cast<std::size_t>(glfw_key)];
 }
 
 std::optional<FramebufferSize> Window::framebuffer_size_change() {

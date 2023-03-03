@@ -8,9 +8,9 @@ namespace util {
 
 class Camera {
  public:
-  Camera(bx::Vec3 position, float aspect_ratio);
+  Camera(bx::Vec3 initial_position, float aspect_ratio);
 
-  void set_position(bx::Vec3 position);
+  void set_position(bx::Vec3 new_position);
 
   void move_forward(float speed);
   void move_backward(float speed);

@@ -6,13 +6,13 @@
 
 namespace util {
 
-Camera::Camera(bx::Vec3 position, float aspect_ratio) : position(position) {
+Camera::Camera(bx::Vec3 initial_position, float aspect_ratio) : position(initial_position) {
   update_projection(aspect_ratio);
   update_view();
 }
 
-void Camera::set_position(bx::Vec3 position) {
-  this->position = position;
+void Camera::set_position(bx::Vec3 new_position) {
+  position = new_position;
   update_view();
 }
 
