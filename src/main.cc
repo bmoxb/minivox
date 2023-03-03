@@ -91,6 +91,12 @@ int main() {
       camera.strafe_right(3.0f * delta);
     }
 
+    if (window.is_key_down(GLFW_KEY_W)) {
+      camera.rotate(0.0f, 40.0f * delta);
+    }
+    if (window.is_key_down(GLFW_KEY_S)) {
+      camera.rotate(0.0f, -40.0f * delta);
+    }
     if (window.is_key_down(GLFW_KEY_A)) {
       camera.rotate(80.0f * delta, 0.0f);
     }

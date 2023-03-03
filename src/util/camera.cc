@@ -2,6 +2,8 @@
 
 #include <bgfx/bgfx.h>
 
+#include <algorithm>
+
 namespace util {
 
 Camera::Camera(bx::Vec3 position) : position(position) {
@@ -45,7 +47,7 @@ void Camera::strafe_right(float speed) {
 
 void Camera::rotate(float yaw_update, float pitch_update) {
   yaw += yaw_update;
-  pitch += pitch_update;
+  pitch = std::clamp(pitch + pitch_update, -89.0f, 89.0f);
 
   float rad_yaw = bx::toRad(yaw), rad_pitch = bx::toRad(pitch);
   bx::Vec3 new_direction = {bx::cos(rad_yaw) * bx::cos(rad_pitch), bx::sin(rad_pitch), bx::sin(rad_yaw) * bx::cos(rad_pitch)};
