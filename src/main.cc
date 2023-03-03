@@ -1,16 +1,20 @@
 #include <bgfx/bgfx.h>
 #include <bx/math.h>
-#include <fs.sc.glsl.bin.h>
-#include <vs.sc.glsl.bin.h>
 
 #include <iostream>
 
+#include "fs.sc.essl.bin.h"
+#include "fs.sc.glsl.bin.h"
+#include "fs.sc.spv.bin.h"
 #include "gfx/indexbuffer.h"
 #include "gfx/program.h"
 #include "gfx/shader.h"
 #include "gfx/vertexbuffer.h"
 #include "util/camera.h"
 #include "util/window.h"
+#include "vs.sc.essl.bin.h"
+#include "vs.sc.glsl.bin.h"
+#include "vs.sc.spv.bin.h"
 
 struct PositionColour {
   float x;
@@ -51,8 +55,8 @@ int main() {
   };
   gfx::IndexBuffer index_buffer(std::move(indices));
 
-  gfx::Shader vs(vs_glsl, sizeof(vs_glsl));
-  gfx::Shader fs(fs_glsl, sizeof(fs_glsl));
+  gfx::Shader vs(SHADER_SOURCES(vs));
+  gfx::Shader fs(SHADER_SOURCES(fs));
   gfx::Program program(vs, fs);
 
   util::Camera camera({0.0f, 0.0f, 10.0f}, 800.0f / 600.0f);
