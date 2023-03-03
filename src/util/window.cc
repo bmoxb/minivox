@@ -78,9 +78,10 @@ Window::Window(const std::string& title, uint16_t width, uint16_t height) {
 
   // handle the framebuffer (part of window that is drawn to) being resized
   glfwSetFramebufferSizeCallback(raw_window, []([[maybe_unused]] GLFWwindow* w, int width, int height) {
-    std::cout << "framebuffer resized: " << width << ", " << height << std::endl;
+    auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(w));
 
-    bgfx::setViewRect(0, 0, 0, static_cast<uint16_t>(width), static_cast<uint16_t>(height));
+    FramebufferSize size{.width = static_cast<uint16_t>(width), .height = static_cast<uint16_t>(height)};
+    self->new_size = std::make_optional(size);
   });
 }
 
@@ -105,6 +106,12 @@ bool Window::is_open() const {
 
 bool Window::is_key_down(int glfw_key) const {
   return keys[glfw_key];
+}
+
+std::optional<FramebufferSize> Window::framebuffer_size_change() {
+  auto size = new_size;
+  new_size = std::nullopt;
+  return size;
 }
 
 };  // namespace util

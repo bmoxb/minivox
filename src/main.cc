@@ -55,7 +55,7 @@ int main() {
   gfx::Shader fs(fs_glsl, sizeof(fs_glsl));
   gfx::Program program(vs, fs);
 
-  util::Camera camera({0.0f, 0.0f, 10.0f});
+  util::Camera camera({0.0f, 0.0f, 10.0f}, 800.0f / 600.0f);
 
   float delta = 0.0f, last_time = 0.0f, current_time = 0.0f;
 
@@ -63,6 +63,18 @@ int main() {
     current_time = static_cast<float>(glfwGetTime());
     delta = current_time - last_time;
     last_time = current_time;
+
+    auto new_fb_size = window.framebuffer_size_change();
+    if (new_fb_size) {
+      std::cout << "framebuffer resized: " << new_fb_size->width << ", " << new_fb_size->height
+                << std::endl;
+
+      bgfx::setViewRect(0, 0, 0, new_fb_size->width, new_fb_size->height);
+      bgfx::reset(new_fb_size->width, new_fb_size->height);
+
+      auto aspect_ratio = static_cast<float>(new_fb_size->width) / static_cast<float>(new_fb_size->height);
+      camera.update_aspect_ratio(aspect_ratio);
+    }
 
     bgfx::touch(0);
 

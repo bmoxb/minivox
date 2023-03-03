@@ -6,15 +6,8 @@
 
 namespace util {
 
-Camera::Camera(bx::Vec3 position) : position(position) {
-  bx::mtxProj(
-      projection.data(),
-      90.0f,
-      800.0f / 600.0f,
-      0.1f,
-      100.0f,
-      bgfx::getCaps()->homogeneousDepth);
-
+Camera::Camera(bx::Vec3 position, float aspect_ratio) : position(position) {
+  update_projection(aspect_ratio);
   update_view();
 }
 
@@ -53,6 +46,21 @@ void Camera::rotate(float yaw_update, float pitch_update) {
   bx::Vec3 new_direction = {bx::cos(rad_yaw) * bx::cos(rad_pitch), bx::sin(rad_pitch), bx::sin(rad_yaw) * bx::cos(rad_pitch)};
   direction = bx::normalize(new_direction);
   update_view();
+}
+
+void Camera::update_aspect_ratio(float aspect_ratio) {
+  update_projection(aspect_ratio);
+}
+
+void Camera::update_projection(float aspect_ratio) {
+  bx::mtxProj(
+      projection.data(),
+      90.0f,
+      aspect_ratio,
+      0.1f,
+      100.0f,
+      bgfx::getCaps()->homogeneousDepth);
+  bgfx::setViewTransform(0, view.data(), projection.data());
 }
 
 void Camera::update_view() {

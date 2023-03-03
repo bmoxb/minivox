@@ -4,9 +4,15 @@
 #include <bgfx/bgfx.h>
 
 #include <array>
+#include <optional>
 #include <string>
 
 namespace util {
+
+struct FramebufferSize {
+  uint16_t width;
+  uint16_t height;
+};
 
 class Window {
  public:
@@ -25,10 +31,14 @@ class Window {
 
   bool is_key_down(int glfw_key) const;
 
+  std::optional<FramebufferSize> framebuffer_size_change();
+
  private:
   GLFWwindow* raw_window;
 
   std::array<bool, GLFW_KEY_LAST> keys;
+
+  std::optional<FramebufferSize> new_size;
 };
 
 };  // namespace util
