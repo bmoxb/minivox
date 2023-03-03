@@ -32,13 +32,13 @@ void Camera::move_backward(float speed) {
 }
 
 void Camera::strafe_left(float speed) {
-  auto translation = bx::normalize(bx::cross(direction, up));
+  auto translation = bx::normalize(bx::cross(direction, bx::Vec3{0.0f, 1.0f, 0.0f}));
   position = bx::add(position, bx::mul(translation, speed));
   update_view();
 }
 
 void Camera::strafe_right(float speed) {
-  auto translation = bx::normalize(bx::cross(direction, up));
+  auto translation = bx::normalize(bx::cross(direction, bx::Vec3{0.0f, 1.0f, 0.0f}));
   position = bx::sub(position, bx::mul(translation, speed));
   update_view();
 }
@@ -54,7 +54,7 @@ void Camera::rotate(float yaw_update, float pitch_update) {
 }
 
 void Camera::update_view() {
-  bx::mtxLookAt(view.data(), position, bx::add(position, direction), up);
+  bx::mtxLookAt(view.data(), position, bx::add(position, direction));
   bgfx::setViewTransform(0, view.data(), projection.data());
 }
 

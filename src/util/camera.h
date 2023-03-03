@@ -28,8 +28,6 @@ class Camera {
   // the direction in which the camera is facing
   bx::Vec3 direction = {0.0f, 0.0f, -1.0f};
 
-  bx::Vec3 up = {0.0f, 1.0f, 0.0f};
-
   float yaw = -90.0f;
   float pitch = 0.0f;
 
