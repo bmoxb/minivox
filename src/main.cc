@@ -46,7 +46,13 @@ int main() {
 
   util::Camera camera({0.0f, 0.0f, 10.0f});
 
+  float delta = 0.0f, last_time = 0.0f, current_time = 0.0f;
+
   while (window.is_open()) {
+    current_time = static_cast<float>(glfwGetTime());
+    delta = current_time - last_time;
+    last_time = current_time;
+
     bgfx::touch(0);
 
     float mtx[16];
@@ -73,16 +79,16 @@ int main() {
     glfwPollEvents();
 
     if (window.is_key_down(GLFW_KEY_UP)) {
-      camera.move_forward(0.1f);
+      camera.move_forward(2.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_DOWN)) {
-      camera.move_backward(0.1f);
+      camera.move_backward(2.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_LEFT)) {
-      camera.strafe_left(0.1f);
+      camera.strafe_left(2.0f * delta);
     }
     if (window.is_key_down(GLFW_KEY_RIGHT)) {
-      camera.strafe_right(0.1f);
+      camera.strafe_right(2.0f * delta);
     }
 
     if (window.is_key_down(GLFW_KEY_ESCAPE)) {
