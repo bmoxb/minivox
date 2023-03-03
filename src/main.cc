@@ -9,6 +9,7 @@
 #include "gfx/program.h"
 #include "gfx/shader.h"
 #include "gfx/vertexbuffer.h"
+#include "util/camera.h"
 #include "util/window.h"
 
 struct PositionColour {
@@ -43,23 +44,9 @@ int main() {
   gfx::Shader fs(fs_glsl, sizeof(fs_glsl));
   gfx::Program program(vs, fs);
 
+  util::Camera camera({0.0f, 0.0f, 10.0f});
+
   while (window.is_open()) {
-    const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-    const bx::Vec3 eye = {0.0f, 0.0f, 10.0f};
-
-    // Set view and projection matrix for view 0.
-    float view[16];
-    bx::mtxLookAt(view, eye, at);
-
-    float proj[16];
-    bx::mtxProj(proj,
-                60.0f,
-                float(800) / float(600),
-                0.1f, 100.0f,
-                bgfx::getCaps()->homogeneousDepth);
-
-    bgfx::setViewTransform(0, view, proj);
-
     bgfx::touch(0);
 
     float mtx[16];
@@ -84,6 +71,19 @@ int main() {
     bgfx::frame();
 
     glfwPollEvents();
+
+    if (window.is_key_down(GLFW_KEY_UP)) {
+      camera.move_forward(0.1f);
+    }
+    if (window.is_key_down(GLFW_KEY_DOWN)) {
+      camera.move_backward(0.1f);
+    }
+    if (window.is_key_down(GLFW_KEY_LEFT)) {
+      camera.strafe_left(0.1f);
+    }
+    if (window.is_key_down(GLFW_KEY_RIGHT)) {
+      camera.strafe_right(0.1f);
+    }
 
     if (window.is_key_down(GLFW_KEY_ESCAPE)) {
       window.close();
