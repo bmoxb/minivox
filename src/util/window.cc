@@ -54,8 +54,8 @@ inline void bgfx_init(GLFWwindow* raw_window) {
   bgfx::setViewRect(0, 0, 0, static_cast<uint16_t>(width), static_cast<uint16_t>(height));
 }
 
-Window::Window(const std::string& title, uint16_t width, uint16_t height) {
-  raw_window = glfw_init(title, width, height);
+Window::Window(const std::string& title, uint16_t width, uint16_t height)
+    : raw_window(glfw_init(title, width, height)) {
   bgfx_init(raw_window);
 
   // allow our wrapper window to be accessed from callback functions
