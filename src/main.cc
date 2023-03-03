@@ -30,14 +30,25 @@ int main() {
       .end();
 
   std::vector<PositionColour> vertices = {
-      {0.5f, 0.5f, 0.0f, 0xff0000ff},
-      {0.5f, -0.5f, 0.0f, 0xff0000ff},
-      {-0.5f, -0.5f, 0.0f, 0xff00ff00},
-      {-0.5f, 0.5f, 0.0f, 0xff00ff00},
+      {-1.0f, 1.0f, 1.0f, 0xff000000},
+      {1.0f, 1.0f, 1.0f, 0xff0000ff},
+      {-1.0f, -1.0f, 1.0f, 0xff00ff00},
+      {1.0f, -1.0f, 1.0f, 0xff00ffff},
+      {-1.0f, 1.0f, -1.0f, 0xffff0000},
+      {1.0f, 1.0f, -1.0f, 0xffff00ff},
+      {-1.0f, -1.0f, -1.0f, 0xffffff00},
+      {1.0f, -1.0f, -1.0f, 0xffffffff},
   };
   gfx::VertexBuffer vertex_buffer(std::move(vertices), layout);
 
-  std::vector<uint16_t> indices = {0, 1, 3, 1, 2, 3};
+  std::vector<uint16_t> indices = {
+      0, 1, 2, 1, 3, 2,  //
+      4, 6, 5, 5, 6, 7,  //
+      0, 2, 4, 4, 2, 6,  //
+      1, 5, 3, 5, 7, 3,  //
+      0, 4, 1, 4, 5, 1,  //
+      2, 3, 6, 6, 3, 7,  //
+  };
   gfx::IndexBuffer index_buffer(std::move(indices));
 
   gfx::Shader vs(vs_glsl, sizeof(vs_glsl));
@@ -58,18 +69,15 @@ int main() {
     float mtx[16];
     bx::mtxRotateY(mtx, 0.0f);
 
-    // position x,y,z
     mtx[12] = 0.0f;
     mtx[13] = 0.0f;
     mtx[14] = 0.0f;
 
-    // Set model matrix for rendering.
     bgfx::setTransform(mtx);
 
     vertex_buffer.use();
     index_buffer.use();
 
-    // Set render states.
     bgfx::setState(BGFX_STATE_DEFAULT);
 
     program.submit();
