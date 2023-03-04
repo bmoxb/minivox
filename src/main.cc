@@ -11,6 +11,7 @@
 #include "gfx/shader.h"
 #include "gfx/vertexbuffer.h"
 #include "util/camera.h"
+#include "util/debug.h"
 #include "util/window.h"
 #include "vs.sc.essl.bin.h"
 #include "vs.sc.glsl.bin.h"
@@ -25,6 +26,8 @@ struct PositionColour {
 
 int main() {
   util::Window window("minivox", 800, 600);
+
+  util::Debug debug;
 
   bgfx::VertexLayout layout;
   layout
@@ -80,6 +83,9 @@ int main() {
       camera.update_aspect_ratio(aspect_ratio);
     }
 
+    bgfx::dbgTextClear();
+    bgfx::dbgTextPrintf(0, 0, 0x0F, "delta: %f", delta);
+
     bgfx::touch(0);
 
     float mtx[16];
@@ -126,6 +132,13 @@ int main() {
     }
     if (window.is_key_down(GLFW_KEY_D)) {
       camera.rotate(-80.0f * delta, 0.0f);
+    }
+
+    if (window.was_key_pressed(GLFW_KEY_F1)) {
+      debug.toggle_wireframe();
+    }
+    if (window.was_key_pressed(GLFW_KEY_F2)) {
+      debug.toggle_stats();
     }
 
     if (window.is_key_down(GLFW_KEY_ESCAPE)) {
