@@ -10,4 +10,8 @@ Voxel Chunk::get(VoxelInChunkCoords coords) const {
   return voxels[index];
 }
 
+void Chunk::draw([[maybe_unused]] const ChunkInWorldCoords& coords) const {
+  // TODO: Set model matrix based on coords, and draw chunk mesh.
+}
+
 }  // namespace world

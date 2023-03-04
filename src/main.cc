@@ -17,6 +17,7 @@
 #include "vs.sc.essl.bin.h"
 #include "vs.sc.glsl.bin.h"
 #include "vs.sc.spv.bin.h"
+#include "world/world.h"
 
 struct PositionColour {
   float x;
@@ -35,6 +36,7 @@ int main() {
   util::Camera camera({0.0f, 0.0f, 10.0f}, 800.0f / 600.0f);
   util::Timing timing;
   util::Debug debug;
+  world::World world;
 
   bgfx::VertexLayout layout;
   layout

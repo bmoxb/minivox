@@ -2,9 +2,17 @@
 
 namespace world {
 
+void World::draw() const {
+  for (const auto& it : chunks) {
+    const ChunkInWorldCoords& coords = it.first;
+    const Chunk& chunk = it.second;
+
+    chunk.draw(coords);
+  }
+}
+
 Chunk& World::get_chunk(ChunkInWorldCoords coords) {
-  auto index = (static_cast<uint64_t>(coords.x) << 16) + static_cast<uint64_t>(coords.z);
-  return chunks[index];
+  return chunks[coords];
 }
 
 }  // namespace world

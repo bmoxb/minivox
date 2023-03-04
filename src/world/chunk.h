@@ -18,6 +18,8 @@ class Chunk {
   Chunk(const Chunk&) = delete;
   Chunk& operator=(const Chunk&) = delete;
 
+  void draw(const ChunkInWorldCoords& coords) const;
+
  private:
   Voxel get(VoxelInChunkCoords coords) const;
 

@@ -15,10 +15,12 @@ class World {
   World(const World&) = delete;
   World& operator=(const World&) = delete;
 
+  void draw() const;
+
  private:
   Chunk& get_chunk(ChunkInWorldCoords coords);
 
-  std::unordered_map<uint64_t, Chunk> chunks;
+  std::unordered_map<ChunkInWorldCoords, Chunk> chunks;
 };
 
 }  // namespace world
