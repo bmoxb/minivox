@@ -35,7 +35,7 @@ inline void bgfx_init(GLFWwindow* raw_window) {
   int width, height;
   glfwGetFramebufferSize(raw_window, &width, &height);
 
-  bgfx_init.type = bgfx::RendererType::OpenGL;
+  bgfx_init.type = bgfx::RendererType::Count;
   bgfx_init.resolution.width = static_cast<uint32_t>(width);
   bgfx_init.resolution.height = static_cast<uint32_t>(height);
   bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
@@ -65,13 +65,16 @@ Window::Window(const std::string& title, uint16_t width, uint16_t height)
   glfwSetKeyCallback(raw_window, [](GLFWwindow* w, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
     auto self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(w));
 
+    auto index = static_cast<std::size_t>(key);
+
     switch (action) {
       case GLFW_PRESS:
-        self->keys[static_cast<std::size_t>(key)] = true;
+        self->pressed_keys[index] = true;
+        self->held_keys[index] = true;
         break;
 
       case GLFW_RELEASE:
-        self->keys[static_cast<std::size_t>(key)] = false;
+        self->held_keys[index] = false;
         break;
     }
   });
@@ -107,8 +110,15 @@ bool Window::is_open() const {
   return glfwWindowShouldClose(raw_window) == GLFW_FALSE;
 }
 
+bool Window::was_key_pressed(int glfw_key) {
+  auto index = static_cast<std::size_t>(glfw_key);
+  bool pressed = pressed_keys[index];
+  pressed_keys[index] = false;
+  return pressed;
+}
+
 bool Window::is_key_down(int glfw_key) const {
-  return keys[static_cast<std::size_t>(glfw_key)];
+  return held_keys[static_cast<std::size_t>(glfw_key)];
 }
 
 std::optional<FramebufferSize> Window::framebuffer_size_change() {
