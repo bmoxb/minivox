@@ -29,6 +29,7 @@ class Window {
   void close() const;
   bool is_open() const;
 
+  bool was_key_pressed(int glfw_key);
   bool is_key_down(int glfw_key) const;
 
   std::optional<FramebufferSize> framebuffer_size_change();
@@ -36,7 +37,8 @@ class Window {
  private:
   GLFWwindow* raw_window;
 
-  std::array<bool, GLFW_KEY_LAST> keys;
+  std::array<bool, GLFW_KEY_LAST> pressed_keys;
+  std::array<bool, GLFW_KEY_LAST> held_keys;
 
   std::optional<FramebufferSize> new_size;
 };

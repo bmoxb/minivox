@@ -11,6 +11,8 @@
 #include "gfx/shader.h"
 #include "gfx/vertexbuffer.h"
 #include "util/camera.h"
+#include "util/debug.h"
+#include "util/timing.h"
 #include "util/window.h"
 #include "vs.sc.essl.bin.h"
 #include "vs.sc.glsl.bin.h"
@@ -23,8 +25,16 @@ struct PositionColour {
   uint32_t colour;
 };
 
+void handle_framebuffer_resize(util::Window& window, util::Camera& camera);
+void handle_input(float delta, util::Window& window, util::Camera& camera, util::Debug& debug);
+void handle_rendering(const gfx::VertexBuffer<PositionColour>& vertex_buffer, const gfx::IndexBuffer& index_buffer,
+                      const gfx::Program& program);
+
 int main() {
   util::Window window("minivox", 800, 600);
+  util::Camera camera({0.0f, 0.0f, 10.0f}, 800.0f / 600.0f);
+  util::Timing timing;
+  util::Debug debug;
 
   bgfx::VertexLayout layout;
   layout
@@ -59,79 +69,83 @@ int main() {
   gfx::Shader fs(SHADER_SOURCES(fs));
   gfx::Program program(vs, fs);
 
-  util::Camera camera({0.0f, 0.0f, 10.0f}, 800.0f / 600.0f);
-
-  float delta = 0.0f, last_time = 0.0f, current_time = 0.0f;
-
   while (window.is_open()) {
-    current_time = static_cast<float>(glfwGetTime());
-    delta = current_time - last_time;
-    last_time = current_time;
+    float delta = timing.tick();
 
-    auto new_fb_size = window.framebuffer_size_change();
-    if (new_fb_size) {
-      std::cout << "framebuffer resized: " << new_fb_size->width << ", " << new_fb_size->height
-                << std::endl;
-
-      bgfx::setViewRect(0, 0, 0, new_fb_size->width, new_fb_size->height);
-      bgfx::reset(new_fb_size->width, new_fb_size->height);
-
-      auto aspect_ratio = static_cast<float>(new_fb_size->width) / static_cast<float>(new_fb_size->height);
-      camera.update_aspect_ratio(aspect_ratio);
-    }
-
-    bgfx::touch(0);
-
-    float mtx[16];
-    bx::mtxRotateY(mtx, 0.0f);
-
-    mtx[12] = 0.0f;
-    mtx[13] = 0.0f;
-    mtx[14] = 0.0f;
-
-    bgfx::setTransform(mtx);
-
-    vertex_buffer.use();
-    index_buffer.use();
-
-    bgfx::setState(BGFX_STATE_DEFAULT);
-
-    program.submit();
+    handle_framebuffer_resize(window, camera);
+    handle_input(delta, window, camera, debug);
+    handle_rendering(vertex_buffer, index_buffer, program);
 
     bgfx::frame();
-
     glfwPollEvents();
-
-    if (window.is_key_down(GLFW_KEY_UP)) {
-      camera.move_forward(3.0f * delta);
-    }
-    if (window.is_key_down(GLFW_KEY_DOWN)) {
-      camera.move_backward(3.0f * delta);
-    }
-    if (window.is_key_down(GLFW_KEY_LEFT)) {
-      camera.strafe_left(3.0f * delta);
-    }
-    if (window.is_key_down(GLFW_KEY_RIGHT)) {
-      camera.strafe_right(3.0f * delta);
-    }
-
-    if (window.is_key_down(GLFW_KEY_W)) {
-      camera.rotate(0.0f, 40.0f * delta);
-    }
-    if (window.is_key_down(GLFW_KEY_S)) {
-      camera.rotate(0.0f, -40.0f * delta);
-    }
-    if (window.is_key_down(GLFW_KEY_A)) {
-      camera.rotate(80.0f * delta, 0.0f);
-    }
-    if (window.is_key_down(GLFW_KEY_D)) {
-      camera.rotate(-80.0f * delta, 0.0f);
-    }
-
-    if (window.is_key_down(GLFW_KEY_ESCAPE)) {
-      window.close();
-    }
   }
 
   return EXIT_SUCCESS;
+}
+
+void handle_framebuffer_resize(util::Window& window, util::Camera& camera) {
+  auto new_fb_size = window.framebuffer_size_change();
+  if (new_fb_size) {
+    std::cout << "framebuffer resized: " << new_fb_size->width << ", " << new_fb_size->height
+              << std::endl;
+
+    bgfx::setViewRect(0, 0, 0, new_fb_size->width, new_fb_size->height);
+    bgfx::reset(new_fb_size->width, new_fb_size->height);
+
+    auto aspect_ratio = static_cast<float>(new_fb_size->width) / static_cast<float>(new_fb_size->height);
+    camera.update_aspect_ratio(aspect_ratio);
+  }
+}
+
+void handle_input(float delta, util::Window& window, util::Camera& camera, util::Debug& debug) {
+  if (window.is_key_down(GLFW_KEY_UP)) {
+    camera.move_forward(3.0f * delta);
+  }
+  if (window.is_key_down(GLFW_KEY_DOWN)) {
+    camera.move_backward(3.0f * delta);
+  }
+  if (window.is_key_down(GLFW_KEY_LEFT)) {
+    camera.strafe_left(3.0f * delta);
+  }
+  if (window.is_key_down(GLFW_KEY_RIGHT)) {
+    camera.strafe_right(3.0f * delta);
+  }
+
+  if (window.is_key_down(GLFW_KEY_W)) {
+    camera.rotate(0.0f, 40.0f * delta);
+  }
+  if (window.is_key_down(GLFW_KEY_S)) {
+    camera.rotate(0.0f, -40.0f * delta);
+  }
+  if (window.is_key_down(GLFW_KEY_A)) {
+    camera.rotate(80.0f * delta, 0.0f);
+  }
+  if (window.is_key_down(GLFW_KEY_D)) {
+    camera.rotate(-80.0f * delta, 0.0f);
+  }
+
+  if (window.was_key_pressed(GLFW_KEY_F1)) {
+    debug.toggle_wireframe();
+  }
+  if (window.was_key_pressed(GLFW_KEY_F2)) {
+    debug.toggle_stats();
+  }
+
+  if (window.is_key_down(GLFW_KEY_ESCAPE)) {
+    window.close();
+  }
+}
+
+void handle_rendering(const gfx::VertexBuffer<PositionColour>& vertex_buffer, const gfx::IndexBuffer& index_buffer,
+                      const gfx::Program& program) {
+  float mtx[16];
+  bx::mtxRotateY(mtx, 0.0f);
+  mtx[12] = 0.0f;
+  mtx[13] = 0.0f;
+  mtx[14] = 0.0f;
+  bgfx::setTransform(mtx);
+
+  vertex_buffer.use();
+  index_buffer.use();
+  program.submit();
 }
