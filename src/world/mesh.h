@@ -5,6 +5,7 @@
 #include <array>
 
 #include "gfx/indexbuffer.h"
+#include "gfx/program.h"
 #include "gfx/vertexbuffer.h"
 
 namespace world {
@@ -18,11 +19,12 @@ struct Vertex {
 
 class Mesh {
  public:
-  Mesh(bx::Vec3 pos, std::vector<Vertex> vertex_data, std::vector<uint16_t> index_data);
+  Mesh(const gfx::Program& program, bx::Vec3 pos, std::vector<Vertex> vertex_data, std::vector<uint16_t> index_data);
 
   void draw() const;
 
  private:
+  const gfx::Program& shader_program;
   gfx::VertexBuffer<Vertex> vertices;
   gfx::IndexBuffer indices;
   std::array<float, 16> transform;

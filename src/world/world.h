@@ -21,6 +21,7 @@ class World {
   Chunk& get_chunk(ChunkInWorldCoords coords);
 
   std::unordered_map<ChunkInWorldCoords, Chunk> chunks;
+  gfx::Program shader_program;
 };
 
 }  // namespace world

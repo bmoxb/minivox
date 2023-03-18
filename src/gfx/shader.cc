@@ -24,10 +24,12 @@ Shader::Shader(ShaderSources sources) {
   }
 
   handle = bgfx::createShader(ref);
+  std::cout << "shader created: " << handle.idx << std::endl;
 }
 
 Shader::~Shader() {
   bgfx::destroy(handle);
+  std::cout << "shader destroyed: " << handle.idx << std::endl;
 }
 
 }  // namespace gfx

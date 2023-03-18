@@ -4,11 +4,11 @@
 
 namespace world {
 
-Chunk::Chunk(ChunkInWorldCoords coords) : chunk_in_word_coords(coords) {
-  build_mesh();
+Chunk::Chunk(ChunkInWorldCoords coords, const gfx::Program& program) : chunk_in_word_coords(coords) {
+  build_mesh(program);
 }
 
-void Chunk::build_mesh() {
+void Chunk::build_mesh(const gfx::Program& program) {
   std::vector<Vertex> vertex_data = {
       {-1.0f, 1.0f, 1.0f, 0xff000000},
       {1.0f, 1.0f, 1.0f, 0xff0000ff},
@@ -27,7 +27,7 @@ void Chunk::build_mesh() {
       0, 4, 1, 4, 5, 1,  //
       2, 3, 6, 6, 3, 7,  //
   };
-  mesh = std::make_unique<Mesh>(bx::Vec3{0.0f, 0.0f, 0.0f}, std::move(vertex_data), std::move(index_data));
+  mesh = std::make_unique<Mesh>(program, bx::Vec3{0.0f, 0.0f, 0.0f}, std::move(vertex_data), std::move(index_data));
 }
 
 void Chunk::draw() const {

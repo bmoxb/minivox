@@ -3,9 +3,6 @@
 
 #include <iostream>
 
-#include "fs.sc.essl.bin.h"
-#include "fs.sc.glsl.bin.h"
-#include "fs.sc.spv.bin.h"
 #include "gfx/indexbuffer.h"
 #include "gfx/program.h"
 #include "gfx/shader.h"
@@ -14,9 +11,6 @@
 #include "util/debug.h"
 #include "util/timing.h"
 #include "util/window.h"
-#include "vs.sc.essl.bin.h"
-#include "vs.sc.glsl.bin.h"
-#include "vs.sc.spv.bin.h"
 #include "world/world.h"
 
 struct PositionColour {

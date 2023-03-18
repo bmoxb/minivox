@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "gfx/program.h"
 #include "world/coords.h"
 #include "world/mesh.h"
 #include "world/voxel.h"
@@ -15,7 +16,7 @@ constexpr std::size_t CHUNK_VOXEL_COUNT = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIG
 
 class Chunk {
  public:
-  Chunk(ChunkInWorldCoords coords);
+  Chunk(ChunkInWorldCoords coords, const gfx::Program& program);
 
   Chunk(const Chunk&) = delete;
   Chunk& operator=(const Chunk&) = delete;
@@ -23,7 +24,7 @@ class Chunk {
   Chunk(Chunk&&) = default;
   Chunk& operator=(Chunk&&) = default;
 
-  void build_mesh();
+  void build_mesh(const gfx::Program& program);
 
   void draw() const;
 
