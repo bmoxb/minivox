@@ -11,9 +11,12 @@
 namespace world {
 
 World::World() : shader_program(gfx::Shader(SHADER_SOURCES(vs)), gfx::Shader(SHADER_SOURCES(fs))) {
-  ChunkInWorldCoords pos{0, 0};
-  Chunk chunk(pos, shader_program);
-  chunks.emplace(pos, std::move(chunk));
+  ChunkInWorldCoords pos_0{0, 0};
+  Chunk chunk_0(pos_0, shader_program);
+  chunks.emplace(pos_0, std::move(chunk_0));
+  ChunkInWorldCoords pos_1{0, -1};
+  Chunk chunk_1(pos_1, shader_program);
+  chunks.emplace(pos_1, std::move(chunk_1));
 }
 
 void World::draw() const {

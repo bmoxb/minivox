@@ -6,9 +6,9 @@
 namespace world {
 
 struct VoxelInWorldCoords {
-  uint32_t x;
+  int32_t x;
   uint8_t y;
-  uint32_t z;
+  int32_t z;
 };
 
 struct VoxelInChunkCoords {
@@ -18,8 +18,8 @@ struct VoxelInChunkCoords {
 };
 
 struct ChunkInWorldCoords {
-  uint32_t x;
-  uint32_t z;
+  int32_t x;
+  int32_t z;
 
   bool operator==(const ChunkInWorldCoords& other) const {
     return (x == other.x) && (z == other.z);

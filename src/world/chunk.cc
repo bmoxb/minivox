@@ -27,7 +27,14 @@ void Chunk::build_mesh(const gfx::Program& program) {
       0, 4, 1, 4, 5, 1,  //
       2, 3, 6, 6, 3, 7,  //
   };
-  mesh = std::make_unique<Mesh>(program, bx::Vec3{0.0f, 0.0f, 0.0f}, std::move(vertex_data), std::move(index_data));
+
+  bx::Vec3 world_pos{
+      static_cast<float>(chunk_in_word_coords.x) * static_cast<float>(CHUNK_WIDTH),
+      0.0f,
+      static_cast<float>(chunk_in_word_coords.z) * static_cast<float>(CHUNK_WIDTH),
+  };
+
+  mesh = std::make_unique<Mesh>(program, world_pos, std::move(vertex_data), std::move(index_data));
 }
 
 void Chunk::draw() const {
