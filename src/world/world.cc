@@ -2,17 +2,21 @@
 
 namespace world {
 
+World::World() {
+  ChunkInWorldCoords pos{0, 0};
+  Chunk chunk(pos);
+  chunks.emplace(pos, std::move(chunk));
+}
+
 void World::draw() const {
   for (const auto& it : chunks) {
-    const ChunkInWorldCoords& coords = it.first;
     const Chunk& chunk = it.second;
-
-    chunk.draw(coords);
+    chunk.draw();
   }
 }
 
 Chunk& World::get_chunk(ChunkInWorldCoords coords) {
-  return chunks[coords];
+  return chunks.at(coords);
 }
 
 }  // namespace world

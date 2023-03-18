@@ -10,7 +10,7 @@ namespace world {
 
 class World {
  public:
-  World() = default;
+  World();
 
   World(const World&) = delete;
   World& operator=(const World&) = delete;

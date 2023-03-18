@@ -38,45 +38,12 @@ int main() {
   util::Debug debug;
   world::World world;
 
-  bgfx::VertexLayout layout;
-  layout
-      .begin()
-      .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-      .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
-      .end();
-
-  std::vector<PositionColour> vertices = {
-      {-1.0f, 1.0f, 1.0f, 0xff000000},
-      {1.0f, 1.0f, 1.0f, 0xff0000ff},
-      {-1.0f, -1.0f, 1.0f, 0xff00ff00},
-      {1.0f, -1.0f, 1.0f, 0xff00ffff},
-      {-1.0f, 1.0f, -1.0f, 0xffff0000},
-      {1.0f, 1.0f, -1.0f, 0xffff00ff},
-      {-1.0f, -1.0f, -1.0f, 0xffffff00},
-      {1.0f, -1.0f, -1.0f, 0xffffffff},
-  };
-  gfx::VertexBuffer vertex_buffer(std::move(vertices), layout);
-
-  std::vector<uint16_t> indices = {
-      0, 1, 2, 1, 3, 2,  //
-      4, 6, 5, 5, 6, 7,  //
-      0, 2, 4, 4, 2, 6,  //
-      1, 5, 3, 5, 7, 3,  //
-      0, 4, 1, 4, 5, 1,  //
-      2, 3, 6, 6, 3, 7,  //
-  };
-  gfx::IndexBuffer index_buffer(std::move(indices));
-
-  gfx::Shader vs(SHADER_SOURCES(vs));
-  gfx::Shader fs(SHADER_SOURCES(fs));
-  gfx::Program program(vs, fs);
-
   while (window.is_open()) {
     float delta = timing.tick();
 
     handle_framebuffer_resize(window, camera);
     handle_input(delta, window, camera, debug);
-    handle_rendering(vertex_buffer, index_buffer, program);
+    world.draw();
 
     bgfx::frame();
     glfwPollEvents();
@@ -136,18 +103,4 @@ void handle_input(float delta, util::Window& window, util::Camera& camera, util:
   if (window.is_key_down(GLFW_KEY_ESCAPE)) {
     window.close();
   }
-}
-
-void handle_rendering(const gfx::VertexBuffer<PositionColour>& vertex_buffer, const gfx::IndexBuffer& index_buffer,
-                      const gfx::Program& program) {
-  float mtx[16];
-  bx::mtxRotateY(mtx, 0.0f);
-  mtx[12] = 0.0f;
-  mtx[13] = 0.0f;
-  mtx[14] = 0.0f;
-  bgfx::setTransform(mtx);
-
-  vertex_buffer.use();
-  index_buffer.use();
-  program.submit();
 }
